@@ -1,0 +1,81 @@
+
+1.	Open Windows PowerShell as an administrator (use Run as administrator).
+
+2.	Run this command, and enter your Office 365 work or school account credentials.
+$credential = Get-Credential
+
+3.	Run this command to connect to Azure Active Directory (AD) using the Azure Active Directory PowerShell for Graph module.
+Connect-AzureAD -Credential $credential
+Alternately, if you are using the Microsoft Azure Active Directory Module for Windows PowerShell module, run this command.
+Connect-MsolService -Credential $credential
+
+4.	Run these commands to connect to SharePoint Online. Replace <domainhost> with the actual value for your domain. For example, for "litwareinc.onmicrosoft.com", the <domainhost> value is "litwareinc".
+Import-Module Microsoft.Online.SharePoint.PowerShell -DisableNameChecking
+Connect-SPOService -Url https://<domainhost>-admin.sharepoint.com -credential $credential
+
+5.	Run these commands to connect to Skype for Business Online. A warning about increasing the WSMan NetworkDelayms value is expected the first time you connect and should be ignored.
+Import-Module SkypeOnlineConnector
+$sfboSession = New-CsOnlineSession -Credential $credential
+Import-PSSession $sfboSession
+
+6.	Run these commands to connect to Exchange Online.
+$exchangeSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri "https://outlook.office365.com/powershell-liveid/" -Credential $credential -Authentication "Basic" -AllowRedirection
+Import-PSSession $exchangeSession -DisableNameChecking
+
+7.	Run these commands to connect to the Security & Compliance Center.
+$SccSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $credential -Authentication "Basic" -AllowRedirection
+Import-PSSession $SccSession -Prefix cc
+
+$domainHost="<domain host name, such as litwareinc for litwareinc.onmicrosoft.com>"
+$credential = Get-Credential
+Connect-AzureAD -Credential $credential
+Import-Module Microsoft.Online.SharePoint.PowerShell -DisableNameChecking
+Connect-SPOService -Url https://$domainHost-admin.sharepoint.com -credential $credential
+Import-Module SkypeOnlineConnector
+$sfboSession = New-CsOnlineSession -Credential $credential
+Import-PSSession $sfboSession
+$exchangeSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri "https://outlook.office365.com/powershell-liveid/" -Credential $credential -Authentication "Basic" -AllowRedirection
+Import-PSSession $exchangeSession -DisableNameChecking
+$SccSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $credential -Authentication "Basic" -AllowRedirection
+Import-PSSession $SccSession -Prefix cc
+
+
+
+$domainHost="<domain host name, such as litwareinc for litwareinc.onmicrosoft.com>"
+$credential = Get-Credential
+Connect-MsolService -Credential $credential
+Import-Module Microsoft.Online.SharePoint.PowerShell -DisableNameChecking
+Connect-SPOService -Url https://$domainHost-admin.sharepoint.com -credential $credential
+Import-Module SkypeOnlineConnector
+$sfboSession = New-CsOnlineSession -Credential $credential
+Import-PSSession $sfboSession
+$exchangeSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri "https://outlook.office365.com/powershell-liveid/" -Credential $credential -Authentication "Basic" -AllowRedirection
+Import-PSSession $exchangeSession -DisableNameChecking
+$SccSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $credential -Authentication "Basic" -AllowRedirection
+Import-PSSession $SccSession -Prefix cc
+
+Remove-PSSession $sfboSession ; Remove-PSSession $exchangeSession ; Remove-PSSession $SccSession ; Disconnect-SPOService
+
+Connection steps when using multi-factor authentication
+
+$acctName="<UPN of a global administrator account>"
+$domainHost="<domain host name, such as litwareinc for litwareinc.onmicrosoft.com>"
+#Azure Active Directory
+Connect-AzureAD
+#SharePoint Online
+Connect-SPOService -Url https://$domainHost-admin.sharepoint.com
+#Skype for Business Online
+$sfboSession = New-CsOnlineSession -UserName $acctName
+Import-PSSession $sfboSession
+
+
+
+$acctName="<UPN of a global administrator account>"
+$domainHost="<domain host name, such as litwareinc for litwareinc.onmicrosoft.com>"
+#Azure Active Directory
+Connect-MsolService
+#SharePoint Online
+Connect-SPOService -Url https://$domainHost-admin.sharepoint.com
+#Skype for Business Online
+$sfboSession = New-CsOnlineSession -UserName $acctName
+Import-PSSession $sfboSession
